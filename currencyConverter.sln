@@ -1,25 +1,195 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34330.188
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "currencyConverter", "currencyConverter.csproj", "{F5F15F8E-E7B8-4096-859F-06C6B8D1D1CD}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F5F15F8E-E7B8-4096-859F-06C6B8D1D1CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5F15F8E-E7B8-4096-859F-06C6B8D1D1CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5F15F8E-E7B8-4096-859F-06C6B8D1D1CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5F15F8E-E7B8-4096-859F-06C6B8D1D1CD}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {83ABEC6E-8082-4AAA-9AAB-E187A1AF745A}
-	EndGlobalSection
-EndGlobal
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace currencyConverter
+{
+    internal class Program
+    {
+
+        static string currencyChosen = null;
+        static string symbol = null;
+
+        static void Main(string[] args)
+        {
+
+            while (true)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+
+                String[] CurrencyList = { "usd", "eru", "brl", "jpy", "try" }; // this array is the different currecnys you can convert to
+                double[] ConversationRates = { 1.40, 1.14, 4.77, 151.05, 5.68 }; // it will go along with this array for the conversaiton rates later to index the code
+                double AmountInputted = 0;
+                Double ConvertedCurrency = 0;
+                Double fee;
+                String memberQuestion = null;
+                double AmountInputtedAndFee;
+                double membershipDiscount = 0;
+
+                while (true)
+                {
+
+
+                    while (true) // this while loop will be used along with the try catch loop to loop back if theres an error for example an incorrect data type
+                    {
+                        Console.WriteLine("how much do you want to convert[maximum £2500] ");
+                        try
+                        {
+                            AmountInputted = Convert.ToInt32(Console.ReadLine());
+                            break;
+                        }
+                        catch // if theres an error it will output this messegs and loop back to try again
+                        {
+                            Console.WriteLine("sorry there was an error");
+
+                        }
+                    }
+                    if (AmountInputted > 2500) // this will loop the code back if there inputted number is greater than 2500
+                    {
+                        Console.WriteLine("sorry maxiumum 2500");
+
+                    }
+                    else { break; }
+                }
+
+
+                for (int i = 0; i < CurrencyList.Length; i++) // this for loop will output the array currency list
+                {
+                    Console.WriteLine(CurrencyList[i]);
+                }
+
+                while (true)
+                {
+                    Console.WriteLine("what would you like to convert to");
+
+                    while (true)// this while loop will be used along with the try catch loop to loop back if theres an error for example an incorrect data type
+                    {
+                        try
+                        {
+                            currencyChosen = Console.ReadLine()?.ToLower();
+                            Currencysymbol();
+                            break;
+                        }
+                        catch { Console.WriteLine("sorry there was an error"); }
+                    }
+
+                    int index = Array.IndexOf(CurrencyList, currencyChosen);/* this will look for wahtever was inputted  in currency chosen in the currecylist 
+                                                                           and put the number of placement in the integer index */
+
+                    if (index == -1) // if it cant find it index will be a value of -1 so this if statment will output that messege and loop back to try again
+                    {
+                        Console.WriteLine("thats not an option, try again");
+                    }
+                    else
+                    {
+                        ConvertedCurrency = AmountInputted * ConversationRates[index]; /* if it does find somthing it will multiply the placement "index" of conversaiton rate by the 
+                                                                                    amountimputted and then break out the loop*/
+
+                        break;
+                    }
+                }
+                if (AmountInputted < 300) // all these if statments will calucalte the persentege of Transactional fee depened on how much the amount is
+                {
+                    fee = (AmountInputted / 100) * 3.5;
+                }
+                else if (AmountInputted > 300 && AmountInputted < 750)
+                {
+                    fee = (AmountInputted / 100) * 3;
+                }
+                else if (AmountInputted > 750 && AmountInputted < 1000)
+                {
+                    fee = (AmountInputted / 100) * 2.5;
+                }
+                else if (AmountInputted > 1000 && AmountInputted < 2000)
+                {
+                    fee = (AmountInputted / 100) * 2;
+                }
+                else
+                {
+                    fee = (AmountInputted / 100) * 1.5;
+                }
+                AmountInputtedAndFee = AmountInputted + fee; // this will then add the fee to the amount
+
+                while (true)
+                {
+                    Console.WriteLine("are you a member of staff");
+
+                    while (true) // this while loop will be used along with the try catch loop to loop back if theres an error for example an incorrect data type
+                    {
+                        {
+                            try { memberQuestion = Console.ReadLine().ToLower(); break; } // this will put the input to lower cases to not mess up the next if statment 
+                            catch
+                            {
+                                Console.WriteLine("sorry there was an error");
+                            }
+                        }
+                    }
+                    if (memberQuestion == "yes" || memberQuestion == "y")
+                    {
+                        membershipDiscount = (AmountInputted / 100) * 5; // this will work out a 5% dicount if the user is a member of staff
+                        AmountInputted -= membershipDiscount;
+                        break;
+                    }
+                    else { break; }
+                }
+                Console.WriteLine("you entered £{0} ", AmountInputted); // these output amount and converted amount 
+                Console.WriteLine("this is a fee of :£{0} ", fee);
+                Console.WriteLine("Its converted into :{0}{1} ", symbol, ConvertedCurrency);
+                Console.WriteLine("Your Membership Discount is :{0}", membershipDiscount);
+                Console.WriteLine("and this is your finle cost, £{0} ", AmountInputtedAndFee);
+
+
+                Console.WriteLine( "Would you Like to go again?");
+                string Reloop = Console.ReadLine();
+
+                if (Reloop == "yes" || Reloop == "y")
+                {
+                    Console.Clear();
+                }
+
+                else
+                {
+                    Console.ReadLine(); // this is just so the code does not exit so you can read the ouputs
+
+                }
+
+                
+
+
+
+            }
+        }
+        static void Currencysymbol()
+        {
+            if (currencyChosen == "usd")
+            {
+                symbol = "$";
+            }
+
+            else if (currencyChosen == "eru")
+            {
+                symbol = "€";
+            }
+
+            else if (currencyChosen == "brl")
+            {
+                symbol = "R$";
+            }
+
+            else if (currencyChosen == "jpy")
+            {
+                symbol = "¥";
+            }
+
+            else if (currencyChosen == "try")
+            {
+                symbol = "₺";
+            }
+        }
+
+
+    }
+}
